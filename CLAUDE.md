@@ -16,14 +16,17 @@ Keep the dependency one-way: `oracli` → `ratatui-ptk`. Anything SQL-specific (
 
 ## ratatui-ptk
 
-Parts that render into a ratatui `Buffer`; it does not own the terminal or the event loop.
+Parts that render into a ratatui `Buffer`; it does not own the terminal or the event loop. Laid out like prompt_toolkit: state and behavior in one place, widgets that only draw it.
 
-- **Document / Buffer**: multi-line text, cursor, selection, undo/redo.
-- **Key bindings**: a registry mapping key sequences to editing commands. Only an Emacs set ships; the registry exists so a Vi set can be added later. No user remapping.
-- **Completion**: `Completer` trait, popup completion menu, and fish-style auto-suggest from history.
-- **Highlighting**: `Lexer` trait that turns a line into styled spans.
+- **PromptState**: the model, like prompt_toolkit's `Buffer`. Holds the `TextBuffer` (multi-line text, cursor, undo/redo), history, completion and search state, kill ring, and handles keys. `handle_key` returns `Outcome::{Handled, Submit, Ignored}`; `Ignored` keys (Ctrl-C, Ctrl-D on empty input, ...) are the caller's to act on.
+- **Prompt**: `StatefulWidget` that draws the prompt string, the highlighted text and the history auto-suggestion, or the Ctrl-R search line while searching. `cursor_position` tells the caller where the terminal cursor goes.
+- **CompletionMenu**: `StatefulWidget` for the popup list, like prompt_toolkit's `CompletionsMenu` in a `Float`. `area` places it at the word being completed, above the cursor when it fits; the caller renders it last, over other widgets.
+- **Completion**: `Completer` trait. Selecting a candidate previews it in the text; Esc restores what was typed, any other key keeps the candidate, and one menu session is one undo step. While typing, the menu follows with nothing selected, so Enter still submits; Tab selects. `complete_in_thread` runs the completer on a thread per request, like prompt_toolkit's `ThreadedCompleter`: a wake callback tells the caller to `poll_completions`, and answers to input that has changed since are dropped.
+- **Key bindings**: a registry mapping keys to editing commands. Only an Emacs set ships; the registry exists so a Vi set can be added later. No user remapping.
+- **Highlighting**: `Lexer` trait that tags byte ranges with token classes (`"keyword"`, ...); `Prompt::syntax` maps classes to styles.
 - **History**: file-backed history with reverse incremental search (Ctrl-R).
 - **Accept handler**: a hook that decides whether Enter submits or inserts a newline.
+- **Styles**: widgets take every style through builder methods. The defaults are plain ANSI colors; there is no theme in the library.
 
 ## oracli architecture
 
