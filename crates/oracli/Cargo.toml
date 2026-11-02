@@ -1,0 +1,13 @@
+[package]
+name = "oracli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+oracle-rs = "0.1.7"
+ratatui = "0.30.2"
+ratatui-ptk = { version = "0.1.0", path = "../ratatui-ptk" }
+tree-sitter = "0.26.13"
+tree-sitter-plsql = { version = "0.1.0", path = "../tree-sitter-plsql" }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+unicode-width = "0.2.3"
