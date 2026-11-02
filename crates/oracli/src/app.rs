@@ -287,3 +287,213 @@ pub async fn run(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use ratatui::Terminal;
+    use ratatui::backend::TestBackend;
+    use ratatui::crossterm::event::{KeyCode, KeyModifiers};
+    use tokio::sync::mpsc::unbounded_channel;
+
+    use super::*;
+    use crate::catalog::{Table, Tables};
+
+    /// An unconnected app; tests feed it the DB events a server would send.
+    fn app() -> App {
+        let (tx, _rx) = unbounded_channel();
+        App::new(tx, History::new(), None, Theme::default())
+    }
+
+    /// Sends a key and waits for the completion it may start, as the event loop would.
+    fn key(app: &mut App, code: KeyCode) {
+        app.update(Event::Key(KeyEvent::from(code)));
+        while app.input.is_completing() {
+            std::thread::sleep(std::time::Duration::from_millis(1));
+            app.update(Event::Completions);
+        }
+    }
+
+    fn type_str(app: &mut App, s: &str) {
+        for c in s.chars() {
+            key(app, KeyCode::Char(c));
+        }
+    }
+
+    /// Submits `sql`, then replays `events` and the closing `Idle` as the DB task would.
+    fn run(app: &mut App, sql: &str, events: Vec<DbEvent>) {
+        type_str(app, sql);
+        key(app, KeyCode::Enter);
+        for ev in events.into_iter().chain([DbEvent::Idle]) {
+            app.update(Event::Db(ev));
+        }
+    }
+
+    fn render(app: &mut App, width: u16, height: u16) -> TestBackend {
+        let mut terminal = Terminal::new(TestBackend::new(width, height)).unwrap();
+        terminal.draw(|f| app.draw(f)).unwrap();
+        terminal.backend().clone()
+    }
+
+    fn connected() -> App {
+        let mut app = app();
+        let table = |cols: &[&str]| Table {
+            kind: "TABLE".into(),
+            columns: cols.iter().map(|c| c.to_string()).collect(),
+        };
+        let tables: Tables = [
+            (
+                "EMP".to_string(),
+                table(&["EMPNO", "ENAME", "JOB", "DEPTNO"]),
+            ),
+            ("DEPT".to_string(), table(&["DEPTNO", "DNAME", "LOC"])),
+            ("EMP_HISTORY".to_string(), table(&["EMPNO", "CHANGED_AT"])),
+        ]
+        .into();
+        for ev in [
+            DbEvent::Connected("scott@db:1521/FREEPDB1".into()),
+            DbEvent::Users(vec!["HR".into(), "SCOTT".into()]),
+            DbEvent::Schema {
+                owner: "SCOTT".into(),
+                tables,
+                own: true,
+            },
+            DbEvent::Idle,
+        ] {
+            app.update(Event::Db(ev));
+        }
+        app
+    }
+
+    fn rows(n: usize) -> Vec<Vec<String>> {
+        (1..=n)
+            .map(|i| {
+                vec![
+                    i.to_string(),
+                    format!("employee {i}"),
+                    if i % 3 == 0 {
+                        String::new()
+                    } else {
+                        "CLERK".into()
+                    },
+                ]
+            })
+            .collect()
+    }
+
+    fn emp_columns() -> Vec<String> {
+        vec!["EMPNO".into(), "ENAME".into(), "JOB".into()]
+    }
+
+    #[tokio::test]
+    async fn not_connected() {
+        insta::assert_snapshot!(render(&mut app(), 70, 6));
+    }
+
+    #[tokio::test]
+    async fn query_result_in_log() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "select empno, ename, job from emp;",
+            vec![DbEvent::Rows {
+                columns: emp_columns(),
+                rows: rows(3),
+                more: false,
+            }],
+        );
+        insta::assert_snapshot!(render(&mut app, 70, 14));
+    }
+
+    #[tokio::test]
+    async fn long_result_is_cut_in_log() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "select * from emp;",
+            vec![DbEvent::Rows {
+                columns: emp_columns(),
+                rows: rows(100),
+                more: true,
+            }],
+        );
+        insta::assert_snapshot!(render(&mut app, 70, 12));
+    }
+
+    #[tokio::test]
+    async fn errors_and_messages() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "selec 1;",
+            vec![DbEvent::Error("ORA-00900: invalid SQL statement".into())],
+        );
+        run(
+            &mut app,
+            "insert into dept values (50, 'OPS', 'TOKYO');",
+            vec![DbEvent::Message("1 row(s) affected.".into())],
+        );
+        type_str(&mut app, "exit");
+        key(&mut app, KeyCode::Enter);
+        insta::assert_snapshot!(render(&mut app, 90, 16));
+    }
+
+    #[tokio::test]
+    async fn multiline_plsql_waits_for_slash() {
+        let mut app = connected();
+        type_str(&mut app, "begin");
+        key(&mut app, KeyCode::Enter);
+        type_str(&mut app, "  null;");
+        key(&mut app, KeyCode::Enter);
+        type_str(&mut app, "end;");
+        key(&mut app, KeyCode::Enter);
+        insta::assert_snapshot!(render(&mut app, 50, 12));
+    }
+
+    #[tokio::test]
+    async fn completion_menu() {
+        let mut app = connected();
+        type_str(&mut app, "select * from emp e where e.");
+        key(&mut app, KeyCode::Tab);
+        insta::assert_snapshot!(render(&mut app, 50, 10));
+    }
+
+    #[tokio::test]
+    async fn grid() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "select * from emp;",
+            vec![DbEvent::Rows {
+                columns: emp_columns(),
+                rows: rows(100),
+                more: true,
+            }],
+        );
+        key(&mut app, KeyCode::F(2));
+        for _ in 0..3 {
+            key(&mut app, KeyCode::Down);
+        }
+        insta::assert_snapshot!(render(&mut app, 50, 10));
+    }
+
+    #[tokio::test]
+    async fn grid_scrolls_columns() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "select * from emp;",
+            vec![DbEvent::Rows {
+                columns: emp_columns(),
+                rows: rows(5),
+                more: false,
+            }],
+        );
+        key(&mut app, KeyCode::F(2));
+        key(&mut app, KeyCode::Right);
+        app.update(Event::Key(KeyEvent::new(
+            KeyCode::Char('G'),
+            KeyModifiers::SHIFT,
+        )));
+        insta::assert_snapshot!(render(&mut app, 50, 10));
+    }
+}

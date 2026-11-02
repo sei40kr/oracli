@@ -1,0 +1,20 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app, 90, 16)"
+---
+"Connected to scott@db:1521/FREEPDB1.                                                      "
+"                                                                                          "
+"SQL> selec 1;                                                                             "
+"                                                                                          "
+"ORA-00900: invalid SQL statement                                                          "
+"                                                                                          "
+"SQL> insert into dept values (50, 'OPS', 'TOKYO');                                        "
+"                                                                                          "
+"1 row(s) affected.                                                                        "
+"                                                                                          "
+"SQL> exit                                                                                 "
+"                                                                                          "
+"Uncommitted changes will be rolled back. COMMIT first, or exit again to discard them.     "
+"                                                                                          "
+"SQL>                                                                                      "
+" scott@db:1521/FREEPDB1  TX pending  Ready · F2 grid · F5 refresh · Ctrl-D quit           "

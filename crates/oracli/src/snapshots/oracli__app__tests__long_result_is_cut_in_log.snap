@@ -1,0 +1,16 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app, 70, 12)"
+---
+"13    employee 13 CLERK                                               "
+"14    employee 14 CLERK                                               "
+"15    employee 15                                                     "
+"16    employee 16 CLERK                                               "
+"17    employee 17 CLERK                                               "
+"18    employee 18                                                     "
+"19    employee 19 CLERK                                               "
+"20    employee 20 CLERK                                               "
+"20 rows shown. F2 opens all rows in the grid.                         "
+"                                                                      "
+"SQL>                                                                  "
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refresh · Ctrl-D quit   "

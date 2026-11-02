@@ -1,0 +1,10 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app(), 70, 6)"
+---
+"Not connected. Use CONNECT user/password@host:port/service.           "
+"                                                                      "
+"                                                                      "
+"                                                                      "
+"SQL>                                                                  "
+" not connected  Ready · F2 grid · F5 refresh · Ctrl-D quit            "

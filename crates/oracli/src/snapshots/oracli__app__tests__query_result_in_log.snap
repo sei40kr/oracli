@@ -1,0 +1,18 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app, 70, 14)"
+---
+"                                                                      "
+"Connected to scott@db:1521/FREEPDB1.                                  "
+"                                                                      "
+"SQL> select empno, ename, job from emp;                               "
+"                                                                      "
+"EMPNO ENAME      JOB                                                  "
+"----- ---------- -----                                                "
+"1     employee 1 CLERK                                                "
+"2     employee 2 CLERK                                                "
+"3     employee 3                                                      "
+"3 row(s) selected.                                                    "
+"                                                                      "
+"SQL>                                                                  "
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refresh · Ctrl-D quit   "

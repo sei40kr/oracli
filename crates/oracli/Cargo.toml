@@ -11,3 +11,6 @@ tree-sitter = "0.26.13"
 tree-sitter-plsql = { version = "0.1.0", path = "../tree-sitter-plsql" }
 tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 unicode-width = "0.2.3"
+
+[dev-dependencies]
+insta = "1.49.0"

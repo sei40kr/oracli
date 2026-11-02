@@ -1,0 +1,14 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&mut app, 50, 10)"
+---
+"Not connected. Use CONNECT user/password@host:port"
+"                                                  "
+"Connected to scott@db:1521/FREEPDB1.              "
+"                                                  "
+"                                 EMPNO  COLUMN    "
+"                                 ENAME  COLUMN    "
+"                                 JOB    COLUMN    "
+"                                 DEPTNO COLUMN    "
+"SQL> select * from emp e where e.EMPNO            "
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refr"

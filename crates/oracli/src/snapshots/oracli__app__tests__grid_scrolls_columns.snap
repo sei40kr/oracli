@@ -1,0 +1,14 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app, 50, 10)"
+---
+"┌ Row 5/5 · col 2/3 · q: close ──────────────────┐"
+"│ENAME      JOB                                  │"
+"│employee 1 CLERK                                │"
+"│employee 2 CLERK                                │"
+"│employee 3                                      │"
+"│employee 4 CLERK                                │"
+"│employee 5 CLERK                                │"
+"│                                                │"
+"└────────────────────────────────────────────────┘"
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refr"

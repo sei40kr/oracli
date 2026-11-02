@@ -1,0 +1,16 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&app, 50, 12)"
+---
+"Not connected. Use CONNECT user/password@host:port"
+"                                                  "
+"Connected to scott@db:1521/FREEPDB1.              "
+"                                                  "
+"                                                  "
+"                                                  "
+"                                                  "
+"SQL> begin                                        "
+"       null;                                      "
+"     end;                                         "
+"                                                  "
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refr"

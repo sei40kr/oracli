@@ -128,7 +128,8 @@ Based on numtide/blueprint's `treefmt-and-git-hooks` template (`prefix = "nix"`)
 ```
 nix develop                 # or direnv
 cargo build
-cargo test                  # unit tests
+cargo test                  # unit and snapshot tests
+cargo insta review          # accept or reject changed snapshots (cargo-insta)
 (cd crates/tree-sitter-plsql && tree-sitter generate && tree-sitter test)   # after editing grammar.js
 cargo test -- --ignored     # DB integration tests, needs Oracle (see below); target via ORACLI_TEST_LOGON
 cargo clippy --all-targets -- -D warnings
@@ -140,7 +141,7 @@ nix flake check
 
 - `ratatui-ptk` and parsers (statement terminator, argument parsing): plain unit tests.
 - Grammar: corpus tests in `crates/tree-sitter-plsql/test/corpus/`, run by `tree-sitter test`. Not part of `nix flake check`.
-- Rendering: ratatui `TestBackend`.
+- Rendering: snapshot tests with insta (`src/app.rs`, snapshots in `src/snapshots/`). They drive the whole `App` with key and `DbEvent` events, no database, and snapshot the `TestBackend` screen. End each request with `DbEvent::Idle` so the status line does not show a running timer. After a UI change, run `cargo insta review` and read every changed snapshot before accepting it.
 - Database: integration tests against the Oracle Free container (`gvenzl/oracle-free`), marked `#[ignore]` and excluded from `nix flake check`. Default target `scott/tiger@localhost:1521/FREEPDB1`:
 
   ```
