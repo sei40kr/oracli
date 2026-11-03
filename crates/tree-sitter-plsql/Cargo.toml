@@ -1,0 +1,20 @@
+[package]
+name = "tree-sitter-plsql"
+version = "0.1.0"
+edition = "2024"
+description = "Oracle SQL and PL/SQL grammar for tree-sitter"
+license = "MIT"
+build = "bindings/rust/build.rs"
+include = ["bindings/rust/*", "grammar.js", "src/*", "tree-sitter.json"]
+
+[lib]
+path = "bindings/rust/lib.rs"
+
+[dependencies]
+tree-sitter-language = "0.1.9"
+
+[build-dependencies]
+cc = "1.2"
+
+[dev-dependencies]
+tree-sitter = "0.26.13"

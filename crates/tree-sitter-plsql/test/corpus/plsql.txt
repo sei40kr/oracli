@@ -1,0 +1,56 @@
+================================================================================
+Anonymous block ended by a slash line
+================================================================================
+
+begin
+  for r in (select ename from emp) loop
+    dbms_output.put_line(r.ename);
+  end loop;
+exception
+  when no_data_found then null;
+end;
+/
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block
+    (keyword_begin)
+    (loop_statement
+      (keyword_for)
+      variable: (identifier)
+      (keyword_in)
+      (subquery
+        (query
+          (select
+            (keyword_select)
+            (select_list
+              (select_item
+                value: (column_reference
+                  (identifier))))
+            (from_clause
+              (keyword_from)
+              (table_reference
+                (object_name
+                  name: (identifier)))))))
+      (keyword_loop)
+      (call_statement
+        (function_call
+          name: (identifier)
+          name: (identifier)
+          (argument
+            (column_reference
+              (identifier)
+              (identifier)))))
+      (keyword_end)
+      (keyword_loop))
+    (exception_section
+      (keyword_exception)
+      (exception_handler
+        (keyword_when)
+        (identifier)
+        (keyword_then)
+        (null_statement
+          (keyword_null))))
+    (keyword_end))
+  (slash))

@@ -1,0 +1,19 @@
+{
+  "grammars": [
+    {
+      "name": "plsql",
+      "camelcase": "Plsql",
+      "scope": "source.plsql",
+      "path": ".",
+      "file-types": ["pls", "pks", "pkb", "plsql"]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Oracle SQL and PL/SQL grammar for tree-sitter"
+  },
+  "bindings": {
+    "rust": true
+  }
+}

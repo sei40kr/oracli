@@ -1,0 +1,150 @@
+================================================================================
+Join, alias, bind variable and row limiting
+================================================================================
+
+select e.ename, d.dname as dept
+from emp e join dept d on e.deptno = d.deptno
+where e.sal > :min
+order by 1 desc nulls last
+fetch first 5 rows only;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (query
+      (select
+        (keyword_select)
+        (select_list
+          (select_item
+            value: (column_reference
+              (identifier)
+              (identifier)))
+          (select_item
+            value: (column_reference
+              (identifier)
+              (identifier))
+            (keyword_as)
+            alias: (identifier)))
+        (from_clause
+          (keyword_from)
+          (join
+            (table_reference
+              (object_name
+                name: (identifier))
+              alias: (identifier))
+            (keyword_join)
+            (table_reference
+              (object_name
+                name: (identifier))
+              alias: (identifier))
+            (keyword_on)
+            (comparison
+              (column_reference
+                (identifier)
+                (identifier))
+              (column_reference
+                (identifier)
+                (identifier)))))
+        (where_clause
+          (keyword_where)
+          (comparison
+            (column_reference
+              (identifier)
+              (identifier))
+            (bind_variable))))
+      (order_by_clause
+        (keyword_order)
+        (keyword_by)
+        (order_item
+          (literal
+            (number))
+          (keyword_desc)
+          (keyword_nulls)
+          (keyword_last)))
+      (row_limiting_clause
+        (keyword_fetch)
+        (keyword_first)
+        (literal
+          (number))
+        (keyword_rows)
+        (keyword_only)))))
+
+================================================================================
+Oracle literals and hierarchical query
+================================================================================
+
+select q'[it's]', n'x', level from dual connect by level <= 3
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (query
+      (select
+        (keyword_select)
+        (select_list
+          (select_item
+            value: (literal
+              (q_string)))
+          (select_item
+            value: (literal
+              (string)))
+          (select_item
+            value: (column_reference
+              (identifier))))
+        (from_clause
+          (keyword_from)
+          (table_reference
+            (object_name
+              name: (identifier))))
+        (hierarchical_clause
+          (keyword_connect)
+          (keyword_by)
+          (comparison
+            (column_reference
+              (identifier))
+            (literal
+              (number))))))))
+
+================================================================================
+Keywords are names where no keyword fits
+================================================================================
+
+select type from emp from_
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (query
+      (select
+        (keyword_select)
+        (select_list
+          (select_item
+            value: (column_reference
+              (identifier))))
+        (from_clause
+          (keyword_from)
+          (table_reference
+            (object_name
+              name: (identifier))
+            alias: (identifier)))))))
+
+================================================================================
+Unterminated string runs to the end
+================================================================================
+
+select 'abc from dual
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (query
+      (select
+        (keyword_select)
+        (select_list
+          (select_item
+            value: (literal
+              (string))))))))
