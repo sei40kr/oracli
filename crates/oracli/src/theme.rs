@@ -1,7 +1,10 @@
 //! Every style oracli draws with. Components and the prompt take their styles from here.
 
 use ratatui::style::{Color, Modifier, Style};
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Theme {
     pub keyword: Style,
     pub string: Style,

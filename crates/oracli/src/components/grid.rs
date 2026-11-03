@@ -20,9 +20,17 @@ pub struct Grid {
     first_col: usize,
     // Rows visible at the last draw, for paging.
     page: usize,
+    max_cell_width: usize,
 }
 
 impl Grid {
+    pub fn new(max_cell_width: usize) -> Self {
+        Self {
+            max_cell_width,
+            ..Self::default()
+        }
+    }
+
     pub fn has_result(&self) -> bool {
         !self.columns.is_empty()
     }
@@ -72,7 +80,7 @@ impl Component for Grid {
                     columns: columns.clone(),
                     rows: rows.clone(),
                     more: *more,
-                    ..Self::default()
+                    ..Self::new(self.max_cell_width)
                 };
             }
             DbEvent::MoreRows { rows, more } => {
@@ -86,7 +94,7 @@ impl Component for Grid {
     }
 
     fn draw(&mut self, f: &mut Frame, area: Rect, theme: &Theme) {
-        let widths = column_widths(&self.columns, &self.rows);
+        let widths = column_widths(&self.columns, &self.rows, self.max_cell_width);
         let visible = self.first_col..self.columns.len();
         let row = |cells: &[String]| {
             Row::new(
@@ -134,7 +142,7 @@ mod tests {
 
     #[test]
     fn requests_more_rows_once_at_the_end() {
-        let mut g = Grid::default();
+        let mut g = Grid::new(40);
         g.on_db(&DbEvent::Rows {
             columns: vec!["X".into()],
             rows: vec![vec!["1".into()], vec!["2".into()]],

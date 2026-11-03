@@ -31,11 +31,8 @@ pub trait Component {
     fn draw(&mut self, f: &mut Frame, area: Rect, theme: &Theme);
 }
 
-const MAX_CELL_WIDTH: usize = 40;
-
-/// Display width of each column over the header and rows, capped so one wide value cannot
-/// push the rest off screen.
-fn column_widths(columns: &[String], rows: &[Vec<String>]) -> Vec<usize> {
+/// Display width of each column over the header and rows, capped at `max`.
+fn column_widths(columns: &[String], rows: &[Vec<String>], max: usize) -> Vec<usize> {
     columns
         .iter()
         .enumerate()
@@ -46,7 +43,7 @@ fn column_widths(columns: &[String], rows: &[Vec<String>]) -> Vec<usize> {
                 .chain([c.width()])
                 .max()
                 .unwrap_or(0)
-                .min(MAX_CELL_WIDTH)
+                .min(max)
         })
         .collect()
 }

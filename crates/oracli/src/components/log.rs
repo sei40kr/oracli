@@ -7,9 +7,6 @@ use super::{Component, column_widths, fit, pad};
 use crate::db::DbEvent;
 use crate::theme::Theme;
 
-/// Rows of a result set kept in the log; the grid holds the rest.
-const LOG_ROWS: usize = 20;
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Entry {
     Input(String),
@@ -24,14 +21,25 @@ pub enum Entry {
 }
 
 /// Scrollback of submitted statements and their results.
-#[derive(Default)]
 pub struct Log {
     entries: Vec<Entry>,
     /// Pages scrolled up from the bottom.
     scroll: usize,
+    rows: usize,
+    max_cell_width: usize,
 }
 
 impl Log {
+    /// Keeps the first `rows` rows of each result.
+    pub fn new(rows: usize, max_cell_width: usize) -> Self {
+        Self {
+            entries: Vec::new(),
+            scroll: 0,
+            rows,
+            max_cell_width,
+        }
+    }
+
     pub fn push(&mut self, entry: Entry) {
         self.entries.push(entry);
         self.scroll = 0;
@@ -62,7 +70,7 @@ impl Log {
                     rows,
                     more,
                 } => {
-                    let widths = column_widths(columns, rows);
+                    let widths = column_widths(columns, rows, self.max_cell_width);
                     let row_line = |cells: &[String]| {
                         let s: Vec<String> = widths
                             .iter()
@@ -101,8 +109,8 @@ impl Component for Log {
                 more,
             } => Entry::Table {
                 columns: columns.clone(),
-                rows: rows.iter().take(LOG_ROWS).cloned().collect(),
-                more: *more || rows.len() > LOG_ROWS,
+                rows: rows.iter().take(self.rows).cloned().collect(),
+                more: *more || rows.len() > self.rows,
             },
             _ => return,
         };

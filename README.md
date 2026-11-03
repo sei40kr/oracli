@@ -25,7 +25,7 @@ oracli parses the input with a tree-sitter grammar for Oracle SQL and PL/SQL on 
 - Emacs key bindings, undo, kill ring, file-backed history with Ctrl-R search and fish-style suggestions
 - Full-screen result grid that fetches more rows as you scroll
 - Ctrl-C cancels a running statement
-- `NO_COLOR` support
+- `NO_COLOR` support and a TOML config for colors and table layout
 
 ## Install
 
@@ -94,6 +94,22 @@ Alt-Enter runs the input as it is. One input runs one statement.
 | Ctrl-D | Quit on an empty input |
 
 History is saved to `$XDG_DATA_HOME/oracli/history` (`~/.local/share/oracli/history`).
+
+### Configuration
+
+oracli reads `$XDG_CONFIG_HOME/oracli/config.toml` (`~/.config/oracli/config.toml`) if it exists. Every key is optional:
+
+```toml
+log_rows = 20         # rows of each result shown in the log; F2 shows the rest
+max_cell_width = 40   # widest a column gets in the log and the grid
+
+[theme]
+keyword = { fg = "blue", add_modifier = "BOLD" }
+comment = { fg = "dark-gray", add_modifier = "ITALIC" }
+status = { fg = "white", bg = "#303030" }
+```
+
+A style in `[theme]` replaces the built-in one whole. It takes `fg` and `bg` (a color name, an index such as `"42"`, or `"#rrggbb"`) and `add_modifier` and `sub_modifier` (`"BOLD | ITALIC"`; also `DIM`, `UNDERLINED`, `REVERSED`, `CROSSED_OUT`). Styles: `keyword`, `string`, `number`, `quoted_identifier`, `comment`, `prompt`, `suggestion`, `menu`, `menu_selected`, `menu_meta`, `warning`, `error`, `header`, `muted`, `grid_selected`, `status`, `status_dirty`, `status_busy`. The theme replaces the colors `NO_COLOR` would turn off, so styles set here apply even then.
 
 ## Limitations
 

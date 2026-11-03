@@ -1,6 +1,7 @@
 mod app;
 mod catalog;
 mod components;
+mod config;
 mod db;
 mod logon;
 mod sql;
@@ -55,6 +56,7 @@ async fn run() -> io::Result<()> {
             Some(l)
         }
     };
+    let config = config::Config::load()?;
     let (history, history_err) = match History::with_file(history_path()) {
         Ok(h) => (h, None),
         Err(e) => (History::new(), Some(e)),
@@ -66,7 +68,7 @@ async fn run() -> io::Result<()> {
 
     let mut terminal = ratatui::init();
     execute!(io::stdout(), EnableBracketedPaste)?;
-    let mut app = App::new(tx, history, logon, theme::Theme::from_env());
+    let mut app = App::new(tx, history, logon, config);
     if let Some(e) = history_err {
         app.warn(format!("History is not saved: {e}"));
     }

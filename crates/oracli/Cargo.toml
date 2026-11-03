@@ -6,11 +6,13 @@ license = "MIT"
 
 [dependencies]
 oracle-rs = "0.1.7"
-ratatui = "0.30.2"
+ratatui = { version = "0.30.2", features = ["serde"] }
 ratatui-ptk = { version = "0.1.0", path = "../ratatui-ptk" }
+serde = { version = "1.0.229", features = ["derive"] }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+toml = "1.1.8"
 tree-sitter = "0.26.13"
 tree-sitter-plsql = { version = "0.1.0", path = "../tree-sitter-plsql" }
-tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 unicode-width = "0.2.3"
 
 [dev-dependencies]

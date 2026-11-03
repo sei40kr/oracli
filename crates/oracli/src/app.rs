@@ -9,6 +9,7 @@ use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 use crate::catalog::{SharedCatalog, lock};
 use crate::components::{Component, Entry, Grid, Input, Log, Status};
+use crate::config::Config;
 use crate::db::{Db, DbEvent, Request};
 use crate::logon::Logon;
 use crate::sql::{ClientCommand, client_command, first_keyword, prepare};
@@ -66,7 +67,7 @@ impl App {
         events: UnboundedSender<Event>,
         history: History,
         logon: Option<Logon>,
-        theme: Theme,
+        config: Config,
     ) -> Self {
         let catalog = SharedCatalog::default();
         let wake = {
@@ -81,10 +82,10 @@ impl App {
             logon: None,
             input: Input::new(history, catalog.clone(), wake),
             catalog,
-            log: Log::default(),
-            grid: Grid::default(),
+            log: Log::new(config.log_rows, config.max_cell_width),
+            grid: Grid::new(config.max_cell_width),
             status: Status::default(),
-            theme,
+            theme: config.theme,
             focus: Focus::Input,
             pending: 0,
             exit_warned: false,
@@ -301,7 +302,7 @@ mod tests {
     /// An unconnected app; tests feed it the DB events a server would send.
     fn app() -> App {
         let (tx, _rx) = unbounded_channel();
-        App::new(tx, History::new(), None, Theme::default())
+        App::new(tx, History::new(), None, Config::default())
     }
 
     /// Sends a key and waits for the completion it may start, as the event loop would.

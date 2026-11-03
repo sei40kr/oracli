@@ -48,12 +48,14 @@ DB task ───────┘                   ▲                          
 
 ### Components (MVP)
 
-- **Log**: scrollback of executed statements and results. A query result shows its first 20 rows. PageUp/PageDown scroll.
+- **Log**: scrollback of executed statements and results. A query result shows its first `log_rows` rows (20). PageUp/PageDown scroll.
 - **Input**: `ratatui-ptk` prompt with the SQL lexer and the metadata completer. Keys the prompt ignores become actions: Ctrl-C interrupt, Ctrl-D quit, F2 grid, F5 refresh the catalog.
 - **Grid**: full-screen view of the latest result (F2). Scrolls in both directions; reaching the end fetches the next page.
 - **Status line**: connection, transaction state, running/idle.
 
 Every style lives in `src/theme.rs`: SQL token classes, the prompt and menu, the log, the grid and the status line, in ANSI colors so the terminal palette decides the shades. `NO_COLOR` switches to a monochrome theme of bold, dim and reverse.
+
+`src/config.rs` reads `$XDG_CONFIG_HOME/oracli/config.toml`: `log_rows`, `max_cell_width`, and a `[theme]` table whose entries replace whole styles of the built-in (or `NO_COLOR`) theme, deserialized through ratatui's `serde` feature. Unknown keys are errors, and a bad file stops oracli before the TUI starts.
 
 ### Input and execution
 
@@ -112,7 +114,7 @@ oracli user                       # connect string from $TWO_TASK
 oracli /nolog                     # start unconnected; use CONNECT (also the default with no arguments)
 ```
 
-Only Easy Connect strings. No `tnsnames.ora`/`TNS_ADMIN` and no config file in the MVP (`oracle-rs` cannot resolve TNS aliases).
+Only Easy Connect strings. No `tnsnames.ora`/`TNS_ADMIN` and no connection settings in the config file (`oracle-rs` cannot resolve TNS aliases).
 
 ## Nix
 
