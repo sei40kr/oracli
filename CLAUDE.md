@@ -118,7 +118,8 @@ Only Easy Connect strings. No `tnsnames.ora`/`TNS_ADMIN` and no config file in t
 
 Based on numtide/blueprint's `treefmt-and-git-hooks` template (`prefix = "nix"`).
 
-- `nix/package.nix` (or `nix/packages/`): crane build of the workspace, Rust from nixpkgs, linked with mold.
+- `nix/crane.nix`: crane setup shared by the package and the checks (source filter keeps insta snapshots, mold on Linux, one dependency build).
+- `nix/package.nix`: crane build of `oracli`, Rust from nixpkgs.
 - `nix/devshell.nix`: Rust toolchain, rust-analyzer, mold, sccache. Sets `RUSTC_WRAPPER=sccache` and the mold linker. sccache is devshell-only; it cannot help inside the Nix sandbox.
 - `nix/treefmt.nix`: nixfmt, rustfmt.
 - `nix/checks/`: clippy (`-D warnings`), tests, and pre-commit (nil, statix, treefmt) via git-hooks.nix.
