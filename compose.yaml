@@ -1,0 +1,16 @@
+# Oracle Free for the integration tests: `docker compose up -d --wait`
+services:
+  oracle:
+    image: gvenzl/oracle-free:slim-faststart
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: scott
+      APP_USER_PASSWORD: tiger
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 10s

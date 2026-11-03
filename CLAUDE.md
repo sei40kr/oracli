@@ -143,10 +143,12 @@ nix flake check
 - `ratatui-ptk` and parsers (statement terminator, argument parsing): plain unit tests.
 - Grammar: corpus tests in `crates/tree-sitter-plsql/test/corpus/`, run by `tree-sitter test`. Not part of `nix flake check`.
 - Rendering: snapshot tests with insta (`src/app.rs`, snapshots in `src/snapshots/`). They drive the whole `App` with key and `DbEvent` events, no database, and snapshot the `TestBackend` screen. End each request with `DbEvent::Idle` so the status line does not show a running timer. After a UI change, run `cargo insta review` and read every changed snapshot before accepting it.
-- Database: integration tests against the Oracle Free container (`gvenzl/oracle-free`), marked `#[ignore]` and excluded from `nix flake check`. Default target `scott/tiger@localhost:1521/FREEPDB1`:
+- Database: integration tests against the Oracle Free container (`gvenzl/oracle-free`), marked `#[ignore]` and excluded from `nix flake check`. `compose.yaml` starts it with the default target `scott/tiger@localhost:1521/FREEPDB1`:
 
   ```
-  docker run -d -p 1521:1521 -e ORACLE_PASSWORD=oracle -e APP_USER=scott -e APP_USER_PASSWORD=tiger gvenzl/oracle-free:slim-faststart
+  docker compose up -d --wait   # returns once the database accepts connections
+  cargo test -- --ignored
+  docker compose down
   ```
 
 ## Out of scope for the MVP
