@@ -123,13 +123,14 @@ Statements the grammar does not know yet, such as `ALTER`, `GRANT` and `CREATE P
 
 ## Development
 
-The workspace holds three crates:
+The workspace holds two crates:
 
 | Crate | |
 |---|---|
 | [`crates/oracli`](crates/oracli) | The application |
-| [`crates/ratatui-ptk`](crates/ratatui-ptk) | A prompt_toolkit-like input library for ratatui, with nothing Oracle-specific |
 | [`crates/tree-sitter-plsql`](crates/tree-sitter-plsql) | The tree-sitter grammar for Oracle SQL and PL/SQL |
+
+The input line comes from [ratatui-ptk](https://github.com/sei40kr/ratatui-ptk), a prompt_toolkit-like input library for ratatui.
 
 ```
 nix develop                  # or direnv; Rust, tree-sitter CLI, cargo-insta, mold, sccache

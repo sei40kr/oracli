@@ -1481,6 +1481,7 @@ dependencies = [
 [[package]]
 name = "ratatui-ptk"
 version = "0.1.0"
+source = "git+https://github.com/sei40kr/ratatui-ptk?rev=201fdf9bbc3817bc0dceab5f2ea9819ed3b4d8cf#201fdf9bbc3817bc0dceab5f2ea9819ed3b4d8cf"
 dependencies = [
  "ratatui",
  "unicode-width",

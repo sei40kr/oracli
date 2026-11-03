@@ -7,7 +7,7 @@ license = "MIT"
 [dependencies]
 oracle-rs = "0.1.7"
 ratatui = { version = "0.30.2", features = ["serde"] }
-ratatui-ptk = { version = "0.1.0", path = "../ratatui-ptk" }
+ratatui-ptk = { git = "https://github.com/sei40kr/ratatui-ptk", rev = "201fdf9bbc3817bc0dceab5f2ea9819ed3b4d8cf" }
 serde = { version = "1.0.229", features = ["derive"] }
 tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 toml = "1.1.8"

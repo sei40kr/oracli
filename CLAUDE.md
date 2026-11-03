@@ -5,29 +5,14 @@ It is a REPL: an input box at the bottom, a scrolling log of results above it.
 
 ## Workspace
 
-One Cargo workspace, three crates:
+One Cargo workspace, two crates:
 
 | Crate | Role |
 |-------|------|
-| `crates/ratatui-ptk` | prompt_toolkit-like input library built on ratatui. Knows nothing about SQL or Oracle. |
 | `crates/tree-sitter-plsql` | tree-sitter grammar for Oracle SQL and PL/SQL. Grown here, meant to be usable from editors too. |
-| `crates/oracli` | The TUI application. Depends on the other two and `oracle-rs`. |
+| `crates/oracli` | The TUI application. Depends on `tree-sitter-plsql`, `ratatui-ptk` and `oracle-rs`. |
 
 Keep the dependencies one-way: `oracli` → `ratatui-ptk`, `oracli` → `tree-sitter-plsql`. Anything SQL-specific (lexer, completer, statement terminator rules) lives in `oracli` and plugs into `ratatui-ptk` through its traits.
-
-## ratatui-ptk
-
-Parts that render into a ratatui `Buffer`; it does not own the terminal or the event loop. Laid out like prompt_toolkit: state and behavior in one place, widgets that only draw it.
-
-- **PromptState**: the model, like prompt_toolkit's `Buffer`. Holds the `TextBuffer` (multi-line text, cursor, undo/redo), history, completion and search state, kill ring, and handles keys. `handle_key` returns `Outcome::{Handled, Submit, Ignored}`; `Ignored` keys (Ctrl-C, Ctrl-D on empty input, ...) are the caller's to act on.
-- **Prompt**: `StatefulWidget` that draws the prompt string, the highlighted text and the history auto-suggestion, or the Ctrl-R search line while searching. `cursor_position` tells the caller where the terminal cursor goes.
-- **CompletionMenu**: `StatefulWidget` for the popup list, like prompt_toolkit's `CompletionsMenu` in a `Float`. `area` places it at the word being completed, above the cursor when it fits; the caller renders it last, over other widgets.
-- **Completion**: `Completer` trait. Selecting a candidate previews it in the text; Esc restores what was typed, any other key keeps the candidate, and one menu session is one undo step. While typing, the menu follows with nothing selected, so Enter still submits; Tab selects. `complete_in_thread` runs the completer on a thread per request, like prompt_toolkit's `ThreadedCompleter`: a wake callback tells the caller to `poll_completions`, and answers to input that has changed since are dropped.
-- **Key bindings**: a registry mapping keys to editing commands. Only an Emacs set ships; the registry exists so a Vi set can be added later. No user remapping.
-- **Highlighting**: `Lexer` trait that tags byte ranges with token classes (`"keyword"`, ...); `Prompt::syntax` maps classes to styles.
-- **History**: file-backed history with reverse incremental search (Ctrl-R).
-- **Accept handler**: a hook that decides whether Enter submits or inserts a newline.
-- **Styles**: widgets take every style through builder methods. The defaults are plain ANSI colors; there is no theme in the library.
 
 ## oracli architecture
 
@@ -142,7 +127,7 @@ nix flake check
 
 ## Testing
 
-- `ratatui-ptk` and parsers (statement terminator, argument parsing): plain unit tests.
+- Parsers (statement terminator, argument parsing): plain unit tests.
 - Grammar: corpus tests in `crates/tree-sitter-plsql/test/corpus/`, run by `tree-sitter test`. Not part of `nix flake check`.
 - Rendering: snapshot tests with insta (`src/app.rs`, snapshots in `src/snapshots/`). They drive the whole `App` with key and `DbEvent` events, no database, and snapshot the `TestBackend` screen. End each request with `DbEvent::Idle` so the status line does not show a running timer. After a UI change, run `cargo insta review` and read every changed snapshot before accepting it.
 - Database: integration tests against the Oracle Free container (`gvenzl/oracle-free`), marked `#[ignore]` and excluded from `nix flake check`. `compose.yaml` starts it with the default target `scott/tiger@localhost:1521/FREEPDB1`:
