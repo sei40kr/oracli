@@ -9,6 +9,9 @@ crane.craneLib.buildPackage (
     cargoExtraArgs = "-p oracli";
     # The checks run the tests.
     doCheck = false;
-    meta.mainProgram = "oracli";
+    meta = {
+      mainProgram = "oracli";
+      license = pkgs.lib.licenses.mit;
+    };
   }
 )
