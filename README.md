@@ -1,27 +1,27 @@
 # oracli
 
-A terminal client for Oracle Database, in the spirit of SQLcl and SQL*Plus but with an editor-grade prompt: syntax highlighting, completion from the data dictionary, and a scrollable result grid. Written in Rust on [ratatui](https://ratatui.rs), talking to Oracle through [oracle-rs](https://crates.io/crates/oracle-rs), so no Oracle Client libraries are needed.
+A terminal client for Oracle Database that completes SQL like a code editor. In the spirit of SQLcl and SQL*Plus, with a prompt that knows the grammar and your schema. Written in Rust on [ratatui](https://ratatui.rs), talking to Oracle through [oracle-rs](https://crates.io/crates/oracle-rs), so no Oracle Client libraries are needed.
 
-```
-Connected to scott@localhost:1521/FREEPDB1.
+![oracli completing a join and running it](docs/demo/demo.gif)
 
-SQL> select empno, ename, job from emp;
+## Completion that reads the statement
 
-EMPNO ENAME      JOB
------ ---------- -----
-1     employee 1 CLERK
-2     employee 2 CLERK
-3     employee 3
-3 row(s) selected.
+oracli parses the input with a tree-sitter grammar for Oracle SQL and PL/SQL on every keystroke, so the menu offers what fits where the cursor is, the way an editor's language server would:
 
-SQL>
- scott@localhost:1521/FREEPDB1  Ready · F2 grid · F5 refresh · Ctrl-D quit
-```
+![Columns of EMP offered after its alias](docs/demo/completion.png)
+
+- **As you type**: the menu follows each keystroke, filtered by the word under the cursor. Enter still runs the statement; Tab or ↓ picks a candidate.
+- **Context-aware**: table names after `FROM` and `JOIN`, columns and keywords where an expression goes, keywords after a table alias. Only where the input does not parse yet does the menu fall back to everything.
+- **Aliases resolved**: `e.` lists the columns of the table aliased `e` in any clause, including the select list once the `FROM` names the table.
+- **Columns from the statement**: unqualified column candidates come from every table the statement references.
+- **Schemas and synonyms**: `HR.` loads HR's tables on demand, and public synonyms such as `DUAL` complete and resolve to their target's columns.
+- **Preview in place**: moving through the menu writes the candidate into the input; Esc puts back what you typed, and one completion is one undo step.
+- **Never blocks typing**: candidates are computed on a background thread and dictionary metadata loads in the background after connecting.
 
 ## Features
 
+- Highlighting by the same parse tree that drives completion
 - Multi-line SQL and PL/SQL input with SQLcl's rules for when Enter runs the statement
-- Highlighting and completion driven by a tree-sitter grammar for Oracle SQL and PL/SQL, so candidates fit the cursor's place in the statement: tables after `FROM`, columns of the tables the statement uses, `alias.` columns, `SCHEMA.` objects, synonyms
 - Emacs key bindings, undo, kill ring, file-backed history with Ctrl-R search and fish-style suggestions
 - Full-screen result grid that fetches more rows as you scroll
 - Ctrl-C cancels a running statement
@@ -127,6 +127,14 @@ Integration tests run against Oracle Database Free in a container:
 docker compose up -d --wait  # scott/tiger@localhost:1521/FREEPDB1
 cargo test -- --ignored
 docker compose down
+```
+
+The demo above is recorded with [VHS](https://github.com/charmbracelet/vhs) against the compose database:
+
+```
+docker compose exec -T oracle sqlplus -s scott/tiger@FREEPDB1 < docs/demo/schema.sql
+cargo build --release -p oracli
+vhs docs/demo/demo.tape
 ```
 
 After editing `crates/tree-sitter-plsql/grammar.js`, regenerate and test the parser:
