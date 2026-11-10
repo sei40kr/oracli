@@ -439,6 +439,23 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn ctrl_c_cancels_running_statement() {
+        let mut app = connected();
+        run(
+            &mut app,
+            "update emp set sal = sal * 2;",
+            vec![DbEvent::Message("14 row(s) affected.".into())],
+        );
+        type_str(&mut app, "select * from emp;");
+        key(&mut app, KeyCode::Enter);
+        app.update(Event::Key(KeyEvent::new(
+            KeyCode::Char('c'),
+            KeyModifiers::CONTROL,
+        )));
+        insta::assert_snapshot!(render(&mut app, 80, 12));
+    }
+
+    #[tokio::test]
     async fn multiline_plsql_waits_for_slash() {
         let mut app = connected();
         type_str(&mut app, "begin");

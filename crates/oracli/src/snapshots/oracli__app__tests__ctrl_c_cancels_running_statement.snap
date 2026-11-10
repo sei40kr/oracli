@@ -1,0 +1,16 @@
+---
+source: crates/oracli/src/app.rs
+expression: "render(&mut app, 80, 12)"
+---
+"Connected to scott@db:1521/FREEPDB1.                                            "
+"                                                                                "
+"SQL> update emp set sal = sal * 2;                                              "
+"                                                                                "
+"14 row(s) affected.                                                             "
+"                                                                                "
+"SQL> select * from emp;                                                         "
+"                                                                                "
+"Cancelled. Reconnecting; uncommitted changes were rolled back.                  "
+"                                                                                "
+"SQL>                                                                            "
+" scott@db:1521/FREEPDB1  Ready · F2 grid · F5 refresh · Ctrl-D quit             "
