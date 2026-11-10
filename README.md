@@ -27,6 +27,29 @@ oracli parses the input with a tree-sitter grammar for Oracle SQL and PL/SQL on 
 - Ctrl-C cancels a running statement
 - `NO_COLOR` support and a TOML config for colors and table layout
 
+## Status
+
+| Area | | Notes |
+|---|---|---|
+| Connect: Easy Connect, `tnsnames.ora` alias, `$TWO_TASK`, `/nolog` | ✅ | An alias must resolve to a single TCP address |
+| Password prompt | ✅ | On the command line only; `CONNECT` needs it inline ([#6](https://github.com/sei40kr/oracli/issues/6)) |
+| Run SQL and PL/SQL with SQLcl's Enter rules | ✅ | Statements the grammar does not parse are not detected as finished ([#1](https://github.com/sei40kr/oracli/issues/1)) |
+| `CONNECT`, `DESC`, `EXIT` / `QUIT` | ✅ | |
+| Result log and full-screen grid with paging | ✅ | Pages re-run the query with `OFFSET` / `FETCH` |
+| Ctrl-C cancels a running statement | ✅ | Reconnects; uncommitted work is lost |
+| Syntax highlighting | ✅ | |
+| Completion: keywords, tables, columns, aliases, schemas, synonyms | ✅ | Columns are not scoped to the query block at the cursor ([#2](https://github.com/sei40kr/oracli/issues/2)), synonym gaps ([#3](https://github.com/sei40kr/oracli/issues/3)), quoted names ([#7](https://github.com/sei40kr/oracli/issues/7)) |
+| Emacs keys, undo, kill ring, history with search and suggestions | ✅ | |
+| Config file and `NO_COLOR` | ✅ | Colors and table layout only; no connection settings |
+| Warning on exit with uncommitted DML | ✅ | |
+| `ORA-` error codes | ❌ | Lost by oracle-rs |
+| Vi key bindings, key remapping | ❌ | |
+| Saved connections | ❌ | |
+| Schema browser | ❌ | |
+| Export, `EXPLAIN PLAN` | ❌ | |
+| SQLcl `SET`, `@script`, `SPOOL` | ❌ | |
+| Multiple result tabs | ❌ | |
+
 ## Install
 
 With Nix:

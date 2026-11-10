@@ -4,14 +4,15 @@ An Oracle SQL and PL/SQL grammar for [tree-sitter](https://tree-sitter.github.io
 
 ## Coverage
 
-- Queries: `WITH`, joins, set operations, subqueries, `CONNECT BY`, `GROUP BY`/`HAVING`, `ORDER BY`, `OFFSET`/`FETCH`, `FOR UPDATE`
-- DML: `INSERT`, `UPDATE`, `DELETE`, `MERGE`
-- DDL: `CREATE TABLE`, `CREATE VIEW`, `CREATE INDEX`, `CREATE PROCEDURE`/`FUNCTION`, `DROP`, `TRUNCATE`
-- Transactions: `COMMIT`, `ROLLBACK`, `SAVEPOINT`
-- PL/SQL anonymous blocks: declarations, cursors, `IF`, loops, `EXECUTE IMMEDIATE`, `OPEN`/`FETCH`/`CLOSE`, exception handlers
-- Expressions: `CASE`, `CAST`, analytic `OVER (...)`, bind variables, `q'[...]'` strings
-
-Other statements, such as `ALTER`, `GRANT` and `CREATE PACKAGE`, are not parsed yet.
+| Area | Parsed | Not yet |
+|---|---|---|
+| Queries | `WITH`, joins, `UNION` / `INTERSECT` / `MINUS` / `EXCEPT`, subqueries, `CONNECT BY`, `GROUP BY` / `HAVING`, `ORDER BY`, `OFFSET` / `FETCH`, `FOR UPDATE` | `PIVOT` / `UNPIVOT`, `MODEL`, flashback, `SAMPLE`, `WITHIN GROUP`, `KEEP` |
+| DML | `INSERT`, `UPDATE`, `DELETE`, `MERGE` | `RETURNING INTO`, multi-table `INSERT` |
+| DDL | `CREATE TABLE` (constraints, `AS` query), `CREATE VIEW`, `CREATE INDEX`, `CREATE PROCEDURE` / `FUNCTION`, `DROP`, `TRUNCATE` | `ALTER`, `GRANT` / `REVOKE`, `COMMENT ON`, `CREATE SEQUENCE` / `SYNONYM` / `USER`, `CREATE PACKAGE` / `TRIGGER` / `TYPE` ([#1](https://github.com/sei40kr/oracli/issues/1)) |
+| Transactions | `COMMIT`, `ROLLBACK [TO SAVEPOINT]`, `SAVEPOINT` | `SET TRANSACTION` |
+| PL/SQL | anonymous blocks, variable / cursor / exception declarations, `%TYPE` / `%ROWTYPE`, assignment, calls, `IF`, `LOOP` / `WHILE` / `FOR` (range and cursor), `EXIT`, `RETURN`, `RAISE`, `EXECUTE IMMEDIATE`, `OPEN` / `FETCH` / `CLOSE`, `BULK COLLECT INTO`, exception handlers | `CASE` statement, `GOTO`, `CONTINUE`, `FORALL`, records and collection types, `PRAGMA`, packages, triggers |
+| Expressions | `CASE`, `CAST`, analytic `OVER (...)`, `EXISTS`, `IN`, `BETWEEN`, `LIKE`, `IS NULL`, `ANY` / `ALL`, `PRIOR`, bind variables, `q'[...]'` strings, `DATE` literals | `INTERVAL` / `TIMESTAMP` literals, `MULTISET` |
+| Terminators | `;` and a line holding only `/` | SQL*Plus client commands such as `SET`, `@` and `SPOOL` |
 
 ## Design
 
