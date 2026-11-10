@@ -51,7 +51,7 @@ oracli user                       # connect string from $TWO_TASK
 oracli /nolog                     # start unconnected (also the default)
 ```
 
-The connect identifier is an Easy Connect string. TNS aliases are not supported yet ([#5](https://github.com/sei40kr/oracli/issues/5)).
+The connect identifier is an Easy Connect string or a `tnsnames.ora` alias. The file is found as SQL*Plus finds it: `$TNS_ADMIN`, then `$ORACLE_HOME/network/admin`. An alias must resolve to a single TCP address with a `SERVICE_NAME` or `SID`; failover and load-balanced address lists are reported as errors.
 
 Inside the prompt:
 

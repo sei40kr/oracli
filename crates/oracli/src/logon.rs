@@ -3,13 +3,13 @@
 pub struct Logon {
     pub user: String,
     pub password: Option<String>,
-    /// Easy Connect string such as `host:1521/service`.
+    /// Easy Connect string such as `host:1521/service`; a TNS alias is resolved at parse time.
     pub connect: String,
 }
 
 impl Logon {
     /// Parses `user[/password][@connect]`. Without `@connect`, `two_task` (the value of
-    /// `$TWO_TASK`) is the connect string, as in SQL*Plus.
+    /// `$TWO_TASK`) is the connect string, as in SQL*Plus. Either may be a `tnsnames.ora` alias.
     pub fn parse(s: &str, two_task: Option<&str>) -> Result<Self, String> {
         let s = s.trim();
         let (cred, connect) = match s.rsplit_once('@') {
@@ -18,7 +18,7 @@ impl Logon {
                 Some(t) if !t.is_empty() => (s, t.to_owned()),
                 _ => {
                     return Err(
-                        "no connect identifier: use user@host:port/service or set TWO_TASK".into(),
+                        "no connect identifier: use user@host:port/service, user@alias or set TWO_TASK".into(),
                     );
                 }
             },
@@ -33,7 +33,7 @@ impl Logon {
         Ok(Self {
             user: user.to_owned(),
             password,
-            connect,
+            connect: crate::tnsnames::resolve(&connect)?,
         })
     }
 

@@ -6,6 +6,7 @@ mod db;
 mod logon;
 mod sql;
 mod theme;
+mod tnsnames;
 
 use std::io::{self, Write};
 use std::path::PathBuf;
@@ -25,7 +26,7 @@ use crate::logon::Logon;
 const USAGE: &str = "\
 Usage: oracli [user[/password][@connect] | /nolog]
 
-  connect   Easy Connect string, e.g. host:1521/service. Defaults to $TWO_TASK.
+  connect   Easy Connect string (host:1521/service) or a tnsnames.ora alias. Defaults to $TWO_TASK.
   /nolog    Start without connecting (the default with no arguments).";
 
 #[tokio::main]

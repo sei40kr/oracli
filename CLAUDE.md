@@ -99,7 +99,7 @@ oracli user                       # connect string from $TWO_TASK
 oracli /nolog                     # start unconnected; use CONNECT (also the default with no arguments)
 ```
 
-Only Easy Connect strings. No `tnsnames.ora`/`TNS_ADMIN` and no connection settings in the config file (`oracle-rs` cannot resolve TNS aliases).
+Easy Connect strings, or a `tnsnames.ora` alias resolved by `src/tnsnames.rs` (found via `$TNS_ADMIN`, then `$ORACLE_HOME/network/admin`) into one, since `oracle-rs` cannot resolve TNS aliases itself. Only a single TCP `ADDRESS` with `SERVICE_NAME` or `SID` can be expressed; anything else is an error. No connection settings in the config file.
 
 ## Nix
 
@@ -140,4 +140,4 @@ nix flake check
 
 ## Out of scope for the MVP
 
-Vi key bindings, key remapping, tnsnames.ora, saved connections, schema browser, export, EXPLAIN PLAN, SQLcl `SET`/`@script`/`SPOOL`, multiple result tabs.
+Vi key bindings, key remapping, saved connections, schema browser, export, EXPLAIN PLAN, SQLcl `SET`/`@script`/`SPOOL`, multiple result tabs.
