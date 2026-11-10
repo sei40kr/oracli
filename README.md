@@ -1,6 +1,6 @@
 # oracli
 
-A terminal client for Oracle Database that completes SQL like a code editor. In the spirit of SQLcl and SQL*Plus, with a prompt that knows the grammar and your schema. Written in Rust on [ratatui](https://ratatui.rs), talking to Oracle through [oracle-rs](https://crates.io/crates/oracle-rs), so no Oracle Client libraries are needed.
+A terminal client for Oracle Database that completes SQL like a code editor. In the spirit of SQLcl and SQL\*Plus, with a prompt that knows the grammar and your schema. Written in Rust on [ratatui](https://ratatui.rs), talking to Oracle through [oracle-rs](https://crates.io/crates/oracle-rs), so no Oracle Client libraries are needed.
 
 ![oracli completing a join and running it](docs/demo/demo.gif)
 
@@ -29,26 +29,26 @@ oracli parses the input with a tree-sitter grammar for Oracle SQL and PL/SQL on 
 
 ## Status
 
-| Area | | Notes |
-|---|---|---|
-| Connect: Easy Connect, `tnsnames.ora` alias, `$TWO_TASK`, `/nolog` | ✅ | An alias must resolve to a single TCP address |
-| Password prompt | ✅ | On the command line only; `CONNECT` needs it inline ([#6](https://github.com/sei40kr/oracli/issues/6)) |
-| Run SQL and PL/SQL with SQLcl's Enter rules | ✅ | Statements the grammar does not parse are not detected as finished ([#1](https://github.com/sei40kr/oracli/issues/1)) |
-| `CONNECT`, `DESC`, `EXIT` / `QUIT` | ✅ | |
-| Result log and full-screen grid with paging | ✅ | Pages re-run the query with `OFFSET` / `FETCH` |
-| Ctrl-C cancels a running statement | ✅ | Reconnects; uncommitted work is lost |
-| Syntax highlighting | ✅ | |
-| Completion: keywords, tables, columns, aliases, schemas, synonyms | ✅ | Columns are not scoped to the query block at the cursor ([#2](https://github.com/sei40kr/oracli/issues/2)), synonym gaps ([#3](https://github.com/sei40kr/oracli/issues/3)), quoted names ([#7](https://github.com/sei40kr/oracli/issues/7)) |
-| Emacs keys, undo, kill ring, history with search and suggestions | ✅ | |
-| Config file and `NO_COLOR` | ✅ | Colors and table layout only; no connection settings |
-| Warning on exit with uncommitted DML | ✅ | |
-| `ORA-` error codes | ❌ | Lost by oracle-rs |
-| Vi key bindings, key remapping | ❌ | |
-| Saved connections | ❌ | |
-| Schema browser | ❌ | |
-| Export, `EXPLAIN PLAN` | ❌ | |
-| SQLcl `SET`, `@script`, `SPOOL` | ❌ | |
-| Multiple result tabs | ❌ | |
+| Area                                                               |     | Notes                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------ | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Connect: Easy Connect, `tnsnames.ora` alias, `$TWO_TASK`, `/nolog` | ✅  | An alias must resolve to a single TCP address                                                                                                                                                                                                |
+| Password prompt                                                    | ✅  | On the command line only; `CONNECT` needs it inline ([#6](https://github.com/sei40kr/oracli/issues/6))                                                                                                                                       |
+| Run SQL and PL/SQL with SQLcl's Enter rules                        | ✅  | Statements the grammar does not parse are not detected as finished ([#1](https://github.com/sei40kr/oracli/issues/1))                                                                                                                        |
+| `CONNECT`, `DESC`, `EXIT` / `QUIT`                                 | ✅  |                                                                                                                                                                                                                                              |
+| Result log and full-screen grid with paging                        | ✅  | Pages re-run the query with `OFFSET` / `FETCH`                                                                                                                                                                                               |
+| Ctrl-C cancels a running statement                                 | ✅  | Reconnects; uncommitted work is lost                                                                                                                                                                                                         |
+| Syntax highlighting                                                | ✅  |                                                                                                                                                                                                                                              |
+| Completion: keywords, tables, columns, aliases, schemas, synonyms  | ✅  | Columns are not scoped to the query block at the cursor ([#2](https://github.com/sei40kr/oracli/issues/2)), synonym gaps ([#3](https://github.com/sei40kr/oracli/issues/3)), quoted names ([#7](https://github.com/sei40kr/oracli/issues/7)) |
+| Emacs keys, undo, kill ring, history with search and suggestions   | ✅  |                                                                                                                                                                                                                                              |
+| Config file and `NO_COLOR`                                         | ✅  | Colors and table layout only; no connection settings                                                                                                                                                                                         |
+| Warning on exit with uncommitted DML                               | ✅  |                                                                                                                                                                                                                                              |
+| `ORA-` error codes                                                 | ❌  | Lost by oracle-rs                                                                                                                                                                                                                            |
+| Vi key bindings, key remapping                                     | ❌  |                                                                                                                                                                                                                                              |
+| Saved connections                                                  | ❌  |                                                                                                                                                                                                                                              |
+| Schema browser                                                     | ❌  |                                                                                                                                                                                                                                              |
+| Export, `EXPLAIN PLAN`                                             | ❌  |                                                                                                                                                                                                                                              |
+| SQLcl `SET`, `@script`, `SPOOL`                                    | ❌  |                                                                                                                                                                                                                                              |
+| Multiple result tabs                                               | ❌  |                                                                                                                                                                                                                                              |
 
 ## Install
 
@@ -74,15 +74,15 @@ oracli user                       # connect string from $TWO_TASK
 oracli /nolog                     # start unconnected (also the default)
 ```
 
-The connect identifier is an Easy Connect string or a `tnsnames.ora` alias. The file is found as SQL*Plus finds it: `$TNS_ADMIN`, then `$ORACLE_HOME/network/admin`. An alias must resolve to a single TCP address with a `SERVICE_NAME` or `SID`; failover and load-balanced address lists are reported as errors.
+The connect identifier is an Easy Connect string or a `tnsnames.ora` alias. The file is found as SQL\*Plus finds it: `$TNS_ADMIN`, then `$ORACLE_HOME/network/admin`. An alias must resolve to a single TCP address with a `SERVICE_NAME` or `SID`; failover and load-balanced address lists are reported as errors.
 
 Inside the prompt:
 
-| Command | |
-|---|---|
+| Command                               |                                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `CONNECT user/pass@host:port/service` | Connect or reconnect; the password must be inline for now ([#6](https://github.com/sei40kr/oracli/issues/6)) |
-| `DESC [schema.]object` | Describe a table or view |
-| `EXIT`, `QUIT` | Leave; warns once if DML is uncommitted |
+| `DESC [schema.]object`                | Describe a table or view                                                                                     |
+| `EXIT`, `QUIT`                        | Leave; warns once if DML is uncommitted                                                                      |
 
 ### Running statements
 
@@ -99,22 +99,22 @@ Alt-Enter runs the input as it is. One input runs one statement.
 
 ### Keys
 
-| Key | Action |
-|---|---|
-| Enter / Alt-Enter | Run (see above) / run now |
-| Ctrl-O | Insert a newline |
-| Tab, Shift-Tab | Complete, next / previous candidate |
-| Esc | Close the completion menu and restore what was typed |
-| Up, Down | Previous / next line, then history |
-| Ctrl-R | Search history |
-| → or Ctrl-E at the end | Accept the history suggestion |
-| Ctrl-_ / Alt-_ | Undo / redo |
-| Ctrl-K, Ctrl-U, Ctrl-W, Alt-D, Ctrl-Y | Kill and yank |
-| PageUp, PageDown | Scroll the result log |
-| F2 | Open the latest result in the grid (q or Esc closes it) |
-| F5 | Reload the current schema for completion |
-| Ctrl-C | Cancel the running statement, or clear the input |
-| Ctrl-D | Quit on an empty input |
+| Key                                   | Action                                                  |
+| ------------------------------------- | ------------------------------------------------------- |
+| Enter / Alt-Enter                     | Run (see above) / run now                               |
+| Ctrl-O                                | Insert a newline                                        |
+| Tab, Shift-Tab                        | Complete, next / previous candidate                     |
+| Esc                                   | Close the completion menu and restore what was typed    |
+| Up, Down                              | Previous / next line, then history                      |
+| Ctrl-R                                | Search history                                          |
+| → or Ctrl-E at the end                | Accept the history suggestion                           |
+| Ctrl-_ / Alt-_                        | Undo / redo                                             |
+| Ctrl-K, Ctrl-U, Ctrl-W, Alt-D, Ctrl-Y | Kill and yank                                           |
+| PageUp, PageDown                      | Scroll the result log                                   |
+| F2                                    | Open the latest result in the grid (q or Esc closes it) |
+| F5                                    | Reload the current schema for completion                |
+| Ctrl-C                                | Cancel the running statement, or clear the input        |
+| Ctrl-D                                | Quit on an empty input                                  |
 
 History is saved to `$XDG_DATA_HOME/oracli/history` (`~/.local/share/oracli/history`).
 
@@ -148,9 +148,9 @@ Statements the grammar does not know yet, such as `ALTER`, `GRANT` and `CREATE P
 
 The workspace holds two crates:
 
-| Crate | |
-|---|---|
-| [`crates/oracli`](crates/oracli) | The application |
+| Crate                                                  |                                                   |
+| ------------------------------------------------------ | ------------------------------------------------- |
+| [`crates/oracli`](crates/oracli)                       | The application                                   |
 | [`crates/tree-sitter-plsql`](crates/tree-sitter-plsql) | The tree-sitter grammar for Oracle SQL and PL/SQL |
 
 The input line comes from [ratatui-ptk](https://github.com/sei40kr/ratatui-ptk), a prompt_toolkit-like input library for ratatui.
